@@ -1,8 +1,9 @@
-import {useEffect,useState,useRef} from "react";
+import {useEffect} from "react";
 import {useRecoilState} from "recoil";
 import {timerState} from "./atoms";
 import styled from "styled-components";
 import {motion} from "framer-motion";
+import Confetti from "react-confetti";
 
 const Wrapper=styled.div`
   width:100vw;
@@ -52,7 +53,9 @@ const SecondBox=styled(motion.div)`
   margin-left:20px;
 `;
 
-const TimerStateBtn=styled(motion.button)`
+
+
+const TimerStateBtn=styled(motion.div)`
   width: 100px;
   height: 100px;
   border-radius: 50px;
@@ -67,7 +70,7 @@ const TimerStateBtn=styled(motion.button)`
   transform: translate(-50%, -50%);
   outline:none;
   cursor: pointer;
-
+  
   svg {
     width: 60px; 
     height: 60px;
@@ -122,8 +125,8 @@ function App(){
         if (timer.minute === 0 && timer.second === 0) {
           setTimer((prevTimer) => ({
             ...prevTimer,
-            minute: 0,
-            second: 10,
+            minute: 1,
+            second: 0,
             round: prevTimer.round + 1,
             start:false
           }));
@@ -131,7 +134,7 @@ function App(){
           if (timer.round + 1 === 4) {
             setTimer((prevTimer) => ({
               ...prevTimer,
-              goal: prevTimer.goal + 1,
+              goal: prevTimer.goal + 1 ,
               round: 0,
             }));
           }
@@ -167,11 +170,29 @@ function App(){
     <Wrapper>
       <Pomodoro>Pomodoro</Pomodoro>
       <Timer>
-        <MinuteBox>{timer.minute < 10 ? "0" + timer.minute : timer.minute}</MinuteBox>
+        <MinuteBox
+          key={timer.minute}
+          initial={{ scale:0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+              duration: 0.2,
+          }}
+        >
+          {timer.minute < 10 ? "0" + timer.minute : timer.minute}</MinuteBox>
         <span style={{ fontSize: 80, color: "white" }}>:</span>
-        <SecondBox>{timer.second < 10 ? "0" + timer.second : timer.second}</SecondBox>
+        <SecondBox
+          key={timer.second}
+          initial={{ scale:0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+              duration: 0.2,
+          }}
+        >
+          {timer.second < 10 ? "0" + timer.second : timer.second}</SecondBox>
       </Timer>
-      <TimerStateBtn onClick={handleTimerToggle}>
+      <TimerStateBtn 
+        whileHover={{ scale:[null,1.5,1.4] }}
+        transition={{ duration: 0.3 }} onClick={handleTimerToggle}>
       {timer.start ? (
         <svg
           fill="currentColor"
