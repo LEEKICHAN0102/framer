@@ -115,6 +115,7 @@ const GoalCheckBox=styled.div`
   text-align:center;
 `;
 
+
 function App(){
   const [timer, setTimer] = useRecoilState(timerState);
   useEffect(() => {
@@ -191,7 +192,10 @@ function App(){
           {timer.second < 10 ? "0" + timer.second : timer.second}</SecondBox>
       </Timer>
       <TimerStateBtn 
-        whileHover={{ scale:[null,1.5,1.4] }}
+        whileHover={{ 
+          scale:1.5,
+          transition:{duration:0.2},
+        }}
         transition={{ duration: 0.3 }} onClick={handleTimerToggle}>
       {timer.start ? (
         <svg
