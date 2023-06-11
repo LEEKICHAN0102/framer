@@ -1,14 +1,15 @@
-import {useEffect} from "react";
+import {useState,useEffect} from "react";
 import {useRecoilState} from "recoil";
 import {timerState} from "./atoms";
 import styled from "styled-components";
-import {motion} from "framer-motion";
+import { motion} from "framer-motion";
 import Confetti from "react-confetti";
 
 const Wrapper=styled.div`
-  width:100vw;
-  height:100vh;
+  width: 100%;
+  height: 100%;
 `;
+
 
 const Pomodoro=styled.h1`
   color:white;
@@ -64,10 +65,7 @@ const TimerStateBtn=styled(motion.div)`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.1);
   color: white;
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin:0 auto;
   outline:none;
   cursor: pointer;
   
@@ -76,6 +74,7 @@ const TimerStateBtn=styled(motion.div)`
     height: 60px;
   }
 `;
+
 
 const CheckBox=styled.div`
   display: flex;
@@ -118,6 +117,23 @@ const GoalCheckBox=styled.div`
 
 function App(){
   const [timer, setTimer] = useRecoilState(timerState);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    let countdownConfetti: number | undefined;
+
+    if (timer.goal) {
+      setShowConfetti(true);
+
+      countdownConfetti = window.setTimeout(() => {
+        setShowConfetti(false);
+      }, 10000);
+    }
+
+    return () => clearTimeout(countdownConfetti);
+  }, [timer.goal]);
+
+
   useEffect(() => {
     let countdownInterval: number | undefined;
 
@@ -126,8 +142,8 @@ function App(){
         if (timer.minute === 0 && timer.second === 0) {
           setTimer((prevTimer) => ({
             ...prevTimer,
-            minute: 1,
-            second: 0,
+            minute: 0,
+            second: 3,
             round: prevTimer.round + 1,
             start:false
           }));
@@ -192,11 +208,12 @@ function App(){
           {timer.second < 10 ? "0" + timer.second : timer.second}</SecondBox>
       </Timer>
       <TimerStateBtn 
-        whileHover={{ 
+        whileHover={{
           scale:1.5,
           transition:{duration:0.2},
         }}
-        transition={{ duration: 0.3 }} onClick={handleTimerToggle}>
+        
+        onClick={handleTimerToggle}>
       {timer.start ? (
         <svg
           fill="currentColor"
@@ -217,6 +234,7 @@ function App(){
         </svg>
         )}
       </TimerStateBtn>
+      
       <CheckBox>
         <RoundCheckBox>
           <span>{timer.round}/4</span>
@@ -227,6 +245,7 @@ function App(){
           <span>GOAL</span>
         </GoalCheckBox>
       </CheckBox>
+      {showConfetti && <Confetti />}
     </Wrapper>
   );
 }
